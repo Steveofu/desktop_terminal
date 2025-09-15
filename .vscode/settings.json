@@ -1,0 +1,21 @@
+{
+    "files.associations": {
+        "page_test.h": "c",
+        "page_conf.h": "c",
+        "lv_printf.h": "c",
+        "lv_xiaozhi.h": "c",
+        "stdio.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "em_hal_brightness.h": "c",
+        "time.h": "c",
+        "unistd.h": "c",
+        "sunxifb.h": "c",
+        "res_conf.h": "c",
+        "fcntl.h": "c",
+        "systemv_queue.h": "c",
+        "audio_player_async.h": "c",
+        "http_manager.h": "c"
+    }
+}
