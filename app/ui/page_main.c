@@ -52,6 +52,7 @@ typedef enum{
     MENU_LANGUAGE,
     MENU_APPLE,
     MENU_ABOUT,
+    MENU_Camera,
 }MENU_TYPE_E;
 
 typedef struct{
@@ -61,15 +62,16 @@ typedef struct{
 }menu_info_t;
 
 static menu_info_t menu_info_list[] = {
+    {MENU_Camera,"实时相机",GET_IMAGE_PATH("icon_camera.png")},
     {MENU_TOMATO_TIME,"番茄时钟",GET_IMAGE_PATH("icon_menu_tomato_time.png")},
     {MENU_CLOCK,"闹钟设置",GET_IMAGE_PATH("icon_menu_time.png")},
     {MENU_TIME,"表盘设置",GET_IMAGE_PATH("icon_menu_dial.png")},
-    {MENU_SHORTCUT_KEY,"快捷键",GET_IMAGE_PATH("icon_stm32cubemx.png")},
     {MENU_CITY,"城市设置",GET_IMAGE_PATH("icon_menu_city.png")},
-    {MENU_LANGUAGE,"小游戏",GET_IMAGE_PATH("icon_language.png")},
+    //{MENU_LANGUAGE,"小游戏",GET_IMAGE_PATH("icon_language.png")},
     {MENU_WIFI,"WiFi设置",GET_IMAGE_PATH("icon_menu_wifi.png")},
     {MENU_SETTING,"系统设置",GET_IMAGE_PATH("icon_menu_setting.png")},
-    {MENU_APPLE,"手机模拟",GET_IMAGE_PATH("icon_menu_apple.png")},
+    {MENU_SHORTCUT_KEY,"快捷键",GET_IMAGE_PATH("icon_stm32cubemx.png")},
+    //{MENU_APPLE,"手机模拟",GET_IMAGE_PATH("icon_menu_apple.png")},
     {MENU_LINKAGE,"场景联动",GET_IMAGE_PATH("icon_menu_linkage.png")},
     //{MENU_ABOUT,"关于",GET_IMAGE_PATH("icon_menu_about.png")},
 };
@@ -92,10 +94,12 @@ static void obj_font_set(lv_obj_t *obj,int type, uint16_t weight){
         lv_obj_set_style_text_font(obj, font, 0);
 }
 
+// 获取系统时间，并格式化为字符串
 static bool get_system_time(){
-    time(&timep);
-    memcpy(&time_temp, localtime(&timep), sizeof(struct tm));
-    // printf("h=%d m=%d s=%d\n",time_temp.tm_hour,time_temp.tm_min,time_temp.tm_sec);
+    time(&timep);   // 获取当前时间（秒数）
+    memcpy(&time_temp, localtime(&timep), sizeof(struct tm));  // 转换为本地时间结构体
+
+    // 格式化输出，确保小时和分钟都是两位数
     if(time_temp.tm_hour < 10){
         if(time_temp.tm_min < 10){
             sprintf(time_str,"0%d:0%d",time_temp.tm_hour,time_temp.tm_min);
@@ -109,11 +113,14 @@ static bool get_system_time(){
             sprintf(time_str,"%d:%d",time_temp.tm_hour,time_temp.tm_min);
         }
     }
+
+    // 判断是否到达每天的 00:00:01，如果是返回 true
     if(time_temp.tm_hour == 0 && time_temp.tm_min == 0 && time_temp.tm_sec == 1){
         return true;
     }
-    return false;
+    return false;   // 否则返回 false
 }
+
 
 static void refresh(lv_event_t* event){
     device_state_t* device_state = get_device_state();
@@ -233,6 +240,9 @@ static void menu_click_event_cb(lv_event_t * e){
     }else if(strcmp(menu_name,"关于\0") == 0){
         delete_current_page(&com_style);
         init_page_about_us();
+    }else if(strcmp(menu_name,"实时相机\0") == 0){
+        delete_current_page(&com_style);
+        init_page_camera();
     }
 }
 
@@ -345,8 +355,12 @@ static lv_obj_t * init_menu_list(lv_obj_t *parent){
     lv_obj_set_style_pad_right(cont,40,0);
     lv_obj_add_event_cb(cont,screen_click_event_cb,LV_EVENT_PRESSED,NULL);
 
+
+    // 根据 menu_info_list 初始化菜单项 显示
     int length = sizeof(menu_info_list) / sizeof(menu_info_t);
-    for(int index = 0;index < length;index ++){
+
+    for(int index = 0;index < length; index++)
+    {
         init_item(cont,menu_info_list[index].img_url,menu_info_list[index].name);
     }
 
@@ -411,9 +425,13 @@ static void init_status_icon(lv_obj_t *parent){
 
 void init_page_main(void)
 {
+    // wifi 状态 回调函数注册
     update_wpa_manager_callback_fun();
+
+    // 获取设置的 时钟 和 时间显示类型
     page_type = get_device_state()->time_type;
     clock_type = get_device_state()->clock_type;
+
     get_system_time();
 
     com_style_init();
@@ -425,29 +443,36 @@ void init_page_main(void)
     lv_obj_add_flag(cont,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(cont,screen_click_event_cb,LV_EVENT_CLICKED,NULL);
 
+    // 两种显示 模式 一个静态图片 一个动态gif    
     lv_obj_t * user_avatar_obj = NULL;
-    if(page_type == TIME_TYPE_2){
+    if(page_type == TIME_TYPE_2)
+    {
         lv_obj_t* gif_obj = lv_gif_create(cont);
         lv_gif_set_src(gif_obj, GET_IMAGE_PATH("earth02.gif"));
         lv_obj_set_align(gif_obj,LV_ALIGN_LEFT_MID);
         lv_obj_align(gif_obj,LV_ALIGN_LEFT_MID,-30,20);
         user_avatar_obj = gif_obj;
-    }else{
+    }
+    else
+    {
         user_avatar_obj = init_user_avatar(cont);
     }
 
     init_scroll_view();
 
-    lv_obj_t * bg_img = lv_img_create(cont);
-    lv_img_set_src(bg_img,GET_IMAGE_PATH("main_bg.png"));
-    lv_obj_align(bg_img,LV_ALIGN_RIGHT_MID,-2,0);    
+    // lv_obj_t * bg_img = lv_img_create(cont);
+    // lv_img_set_src(bg_img,GET_IMAGE_PATH("main_bg.png"));
+    // lv_obj_align(bg_img,LV_ALIGN_RIGHT_MID,-2,0);    
 
+    
     lv_obj_t * info_obj = init_info_view(cont);
     lv_obj_align_to(info_obj,user_avatar_obj,LV_ALIGN_OUT_RIGHT_MID,40,0);
 
+    // 主要菜单栏
     lv_obj_t * menu_obj = init_menu_list(cont);
     lv_obj_align_to(menu_obj,info_obj,LV_ALIGN_OUT_RIGHT_MID,20,0);
 
+    // 左右两侧的装饰图片
     lv_obj_t * left_bg_img = lv_img_create(cont);
     lv_img_set_src(left_bg_img,GET_IMAGE_PATH("main_menu_bg_left.png"));
     lv_obj_align_to(left_bg_img,info_obj,LV_ALIGN_OUT_RIGHT_MID,20,0);

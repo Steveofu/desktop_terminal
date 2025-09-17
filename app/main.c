@@ -29,7 +29,7 @@ int main() {
     init_async_audio_player();
     
 #ifdef SIMULATOR_LINUX
-    // Linux模拟器无ble mesh
+    
     printf("Running in Linux simulator mode.\n");
 #else
     printf("Running in T113 mode.111\n");
@@ -41,9 +41,7 @@ int main() {
     
     while (1) {
         time_till_next = lv_task_handler();
-        /**
-         * 延时，保证cpu占有率不会过高
-         */
+
         usleep(time_till_next*1000);
     }
     return 0;

@@ -1,9 +1,3 @@
-/*
- * @Author: xiaozhi 
- * @Date: 2024-09-24 23:31:06 
- * @Last Modified by: xiaozhi
- * @Last Modified time: 2024-09-26 02:24:44
- */
 #ifndef _PAGE_CONF_H_
 #define _PAGE_CONF_H_
 
@@ -54,5 +48,6 @@ void init_page_alarm_remind(ALARM_TYPE_E type);
 void init_page_shortcutkey(void);
 void init_page_language_game(void);
 void init_page_simulate_iphone(void);
+void init_page_camera(void);
 
 #endif

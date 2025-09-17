@@ -1,9 +1,3 @@
-/*
- * @Author: xiaozhi 
- * @Date: 2024-09-24 23:31:09 
- * @Last Modified by: xiaozhi
- * @Last Modified time: 2024-09-25 22:46:54
- */
 #include <stdio.h>
 #include "lvgl.h"
 #include "color_conf.h"

@@ -1,9 +1,3 @@
-/*
- * @Author: xiaozhi 
- * @Date: 2024-09-24 23:31:25 
- * @Last Modified by:   xiaozhi 
- * @Last Modified time: 2024-09-24 23:31:25 
- */
 #ifndef _RES_CONF_H_
 #define _RES_CONF_H_
 
